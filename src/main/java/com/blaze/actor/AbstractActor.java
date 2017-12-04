@@ -2,11 +2,17 @@ package com.blaze.actor;
 
 import java.util.ArrayDeque;
 import java.util.Deque;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
+import org.apache.log4j.Logger;
 
 import com.blaze.util.ActorStates;
 
 public abstract class AbstractActor implements Actor {
 
+	Logger log = Logger.getLogger(this.getClass());
+	
 	protected ActorStates actorState = ActorStates.IDLE;
 	protected static Deque<Object> mailBox;
 	protected AbstractActor senderActor;
@@ -14,6 +20,24 @@ public abstract class AbstractActor implements Actor {
 
 	{
 		mailBox = new ArrayDeque<>();
+		
+		Runnable task = () ->{
+			
+			for(;;) {
+				if(mailBox.size()>0) {
+					
+					Object  message =mailBox.pollFirst();
+					log.info("I have a message in mailBox "+message.getClass());
+					receiveMessage(message);
+				}else {
+//					log.info("i dont have a message in mailbox");
+				}
+			}
+			
+		};
+		
+		ExecutorService executor = Executors.newFixedThreadPool(1);
+		executor.execute(task);
 	}
 
 	protected ActorStates getActorState() {

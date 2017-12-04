@@ -15,12 +15,9 @@ public class ActorContainer {
 
 	private Map<Class<? extends AbstractActor>, List<AbstractActor>> actors = new HashMap<>();
 
-	private static ActorContainer actorContainer =new ActorContainer();
+	private static ActorContainer actorContainer = new ActorContainer();
 
 	public static ActorContainer getSystem() {
-//		if (actorContainer == null) {
-//			new ActorContainer();
-//		}
 		return actorContainer;
 	}
 
@@ -58,8 +55,8 @@ public class ActorContainer {
 			AbstractActor idleActor = actorList.stream().filter(actor -> actor.getActorState() == ActorStates.IDLE)
 					.findFirst().orElse(null);// .get();
 			if (idleActor != null) {
-				 idleActor.receiveMessage(message);
-//				idleActor.addToMailBox(message);
+//				idleActor.receiveMessage(message);
+				 idleActor.addToMailBox(message);
 				idleActor.changeState(ActorStates.ACTIVE);
 			} else {
 				log.info("not actor available");
