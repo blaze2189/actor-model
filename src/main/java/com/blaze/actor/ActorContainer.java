@@ -7,7 +7,7 @@ import java.util.Map;
 
 import org.apache.log4j.Logger;
 
-import com.blaze.util.ActorStates;
+import com.blaze.util.ActorState;
 
 public class ActorContainer {
 
@@ -50,14 +50,17 @@ public class ActorContainer {
 
 	public final void addToMailBox(Class<? extends AbstractActor> clazz, final Object message) {
 		List<AbstractActor> actorList = actorContainer.getActor(clazz);
+                log.info("value of actor lsit "+actorList);
 		if (actorList != null & actorList.size() > 0) {
+                    log.info("value of actor");
 			actorList.get(0).addToMailBox(message);
-			AbstractActor idleActor = actorList.stream().filter(actor -> actor.getActorState() == ActorStates.IDLE)
+			AbstractActor idleActor = actorList.stream().filter(actor -> actor.getActorState() == ActorState.IDLE)
 					.findFirst().orElse(null);// .get();
 			if (idleActor != null) {
 //				idleActor.receiveMessage(message);
 				 idleActor.addToMailBox(message);
-				idleActor.changeState(ActorStates.ACTIVE);
+				idleActor.changeState(ActorState.ACTIVE);
+
 			} else {
 				log.info("not actor available");
 			}

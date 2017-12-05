@@ -7,27 +7,28 @@ import java.util.concurrent.Executors;
 
 import org.apache.log4j.Logger;
 
-import com.blaze.util.ActorStates;
+import com.blaze.util.ActorState;
 
 public abstract class AbstractActor implements Actor {
 
 	Logger log = Logger.getLogger(this.getClass());
-	
-	protected ActorStates actorState = ActorStates.IDLE;
-	protected static Deque<Object> mailBox;
+
+	protected ActorState actorState = ActorState.IDLE;
+	protected volatile static Deque<Object> mailBox;
 	protected AbstractActor senderActor;
-	protected static ActorContainer container = ActorContainer.getSystem();
+	protected static ActorContainer container;
 
 	{
 		mailBox = new ArrayDeque<>();
-		
+                container = ActorContainer.getSystem();		
 		Runnable task = () ->{
-			
+			log.info("starting "+this.getClass());
 			for(;;) {
+//                            log.info("mailBox.size:  "+mailBox.size());
 				if(mailBox.size()>0) {
 					
 					Object  message =mailBox.pollFirst();
-					log.info("I have a message in mailBox "+message.getClass());
+					log.info("I have a message in mailBox ");
 					receiveMessage(message);
 				}else {
 //					log.info("i dont have a message in mailbox");
@@ -38,9 +39,10 @@ public abstract class AbstractActor implements Actor {
 		
 		ExecutorService executor = Executors.newFixedThreadPool(1);
 		executor.execute(task);
+
 	}
 
-	protected ActorStates getActorState() {
+	protected ActorState getActorState() {
 		return this.actorState;
 	}
 
@@ -50,7 +52,7 @@ public abstract class AbstractActor implements Actor {
 		// TODO Auto-generated method stub
 	}
 
-	protected void changeState(ActorStates state) {
+	protected void changeState(ActorState state) {
 		this.actorState = state;
 	}
 

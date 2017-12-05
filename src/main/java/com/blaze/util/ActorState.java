@@ -1,6 +1,6 @@
 package com.blaze.util;
 
-public enum ActorStates {
+public enum ActorState {
 
 	IDLE,ACTIVE;
 	
