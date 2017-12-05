@@ -11,59 +11,64 @@ import com.blaze.util.ActorState;
 
 public abstract class AbstractActor implements Actor {
 
-	Logger log = Logger.getLogger(this.getClass());
+    Logger log = Logger.getLogger(this.getClass());
 
-	protected ActorState actorState = ActorState.IDLE;
-	protected volatile static Deque<Object> mailBox;
-	protected AbstractActor senderActor;
-	protected static ActorContainer container;
+    protected ActorState actorState = ActorState.IDLE;
+    protected volatile static Deque<Object> mailBox;
+    protected AbstractActor senderActor;
+    protected ActorContainer container;
 
-	{
-		mailBox = new ArrayDeque<>();
-                container = ActorContainer.getSystem();		
-		Runnable task = () ->{
-			log.info("starting "+this.getClass());
-			for(;;) {
+    {
+        mailBox = new ArrayDeque<>();
+        container = ActorContainer.getSystem();
+        Runnable task = () -> {
+            log.info("starting " + this.getClass() + " thread");
+            for (;;) {
+//                log.info("thread of " + this.getClass());
 //                            log.info("mailBox.size:  "+mailBox.size());
-				if(mailBox.size()>0) {
-					
-					Object  message =mailBox.pollFirst();
-					log.info("I have a message in mailBox ");
-					receiveMessage(message);
-				}else {
+                if (mailBox.size() > 0) {
+
+                    Object message = mailBox.pollFirst();
+                    if (message != null) {
+                        receiveMessage(message);
+                        this.actorState = ActorState.IDLE;
+                    }
+                } else {
 //					log.info("i dont have a message in mailbox");
-				}
-			}
-			
-		};
-		
-		ExecutorService executor = Executors.newFixedThreadPool(1);
-		executor.execute(task);
+                }
+            }
 
-	}
+        };
 
-	protected ActorState getActorState() {
-		return this.actorState;
-	}
+        ExecutorService executor = Executors.newFixedThreadPool(1);
+        executor.execute(task);
 
-	protected abstract void receiveMessage(Object object);
+    }
 
-	protected void answerMessage(Object object) {
-		// TODO Auto-generated method stub
-	}
+    protected ActorState getActorState() {
+        return this.actorState;
+    }
 
-	protected void changeState(ActorState state) {
-		this.actorState = state;
-	}
+    protected abstract void receiveMessage(Object object);
 
-	protected void setSenderActor(AbstractActor senderActor) {
-		this.senderActor = senderActor;
-	};
+    protected void answerMessage(Object object) {
+        // TODO Auto-generated method stub
+    }
+
+    protected void changeState(ActorState state) {
+        this.actorState = state;
+    }
+
+    protected void setSenderActor(AbstractActor senderActor) {
+        this.senderActor = senderActor;
+    }
+
+    ;
 
 	public void addToMailBox(Object message) {
-		if (message != null) {
-			mailBox.push(message);
-		}
-	}
+        if (message != null) {
+            mailBox.push(message);
+        }
+    }
 
 }
