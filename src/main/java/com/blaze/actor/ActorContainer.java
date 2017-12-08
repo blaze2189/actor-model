@@ -25,23 +25,29 @@ public class ActorContainer {
 	}
 
 	{
-		List<AbstractActor> actorList = new ArrayList<>();
-		for (int i = 0; i < 5; i++) {
-			actorList.add(new InventoryActor());
-		}
-		actors.put(InventoryActor.class, actorList);
+		List<AbstractActor> actorList;
+//		actorList = new ArrayList<>();
+//		for (int i = 0; i < 1; i++) {
+//			actorList.add(new InventoryActor());
+//		}
+//		actors.put(InventoryActor.class, actorList);
 
 		actorList = new ArrayList<>();
-		for (int i = 0; i < 5; i++) {
+		for (int i = 0; i < 3; i++) {
 			actorList.add(new CashierActor());
 		}
 		actors.put(CashierActor.class, actorList);
 
+//		actorList = new ArrayList<>();
+//		for (int i = 0; i < 3; i++) {
+//			actorList.add(new KitchenActor());
+//		}
+		
 		actorList = new ArrayList<>();
-		for (int i = 0; i < 5; i++) {
-			actorList.add(new KitchenActor());
+		for (int i = 0; i < 3; i++) {
+			actorList.add(new CustomerActor());
 		}
-		actors.put(KitchenActor.class, actorList);
+		actors.put(CustomerActor.class, actorList);
 	}
 
 	public List<AbstractActor> getActor(Class<? extends AbstractActor> clazz) {

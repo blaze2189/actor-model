@@ -13,11 +13,7 @@ import java.util.List;
 
 public class KitchenActor extends AbstractActor {
 
-    private Logger log = Logger.getLogger(KitchenActor.class);
-
-    public KitchenActor() {
-        log.info("KitchenActor instance");
-    }
+   
 
     @Override
     protected void receiveMessage(Object object) {
@@ -46,5 +42,11 @@ public class KitchenActor extends AbstractActor {
         }
 
     }
+
+	@Override
+	protected void emit(Object object) {
+		// TODO Auto-generated method stub
+		
+	}
 
 }

@@ -7,11 +7,7 @@ import org.apache.log4j.Logger;
 
 public class InventoryActor extends AbstractActor {
 
-    private Logger log = Logger.getLogger(InventoryActor.class);
-
-    public InventoryActor() {
-        log.info("new instance of " + this.getClass());
-    }
+   
 
     @Override
     protected void receiveMessage(Object message) {
@@ -27,7 +23,7 @@ public class InventoryActor extends AbstractActor {
     }
 
     @Override
-    protected void answerMessage(Object message) {
+    protected void emit(Object message) {
     }
 
 }

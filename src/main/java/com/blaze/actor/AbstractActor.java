@@ -11,7 +11,7 @@ import com.blaze.util.ActorState;
 
 public abstract class AbstractActor implements Actor {
 
-    Logger log = Logger.getLogger(this.getClass());
+    Logger log = Logger.getLogger(getClass());
 
     protected ActorState actorState = ActorState.IDLE;
     protected volatile static Deque<Object> mailBox;
@@ -39,10 +39,14 @@ public abstract class AbstractActor implements Actor {
             }
 
         };
-
+       
         ExecutorService executor = Executors.newFixedThreadPool(1);
         executor.execute(task);
 
+    }
+    
+    protected AbstractActor() {
+    	log.info("new instance "+getClass());
     }
 
     protected ActorState getActorState() {
@@ -51,9 +55,7 @@ public abstract class AbstractActor implements Actor {
 
     protected abstract void receiveMessage(Object object);
 
-    protected void answerMessage(Object object) {
-        // TODO Auto-generated method stub
-    }
+    protected abstract void emit(Object object);
 
     protected void changeState(ActorState state) {
         this.actorState = state;
@@ -62,8 +64,6 @@ public abstract class AbstractActor implements Actor {
     protected void setSenderActor(AbstractActor senderActor) {
         this.senderActor = senderActor;
     }
-
-    ;
 
 	public void addToMailBox(Object message) {
         if (message != null) {
