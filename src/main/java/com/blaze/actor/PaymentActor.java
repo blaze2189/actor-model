@@ -1,4 +1,4 @@
-package com.blaze.propertychange.actor;
+package com.blaze.actor;
 
 import org.apache.log4j.Logger;
 

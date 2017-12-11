@@ -1,4 +1,4 @@
-package com.blaze.propertychange.actor;
+package com.blaze.actor;
 
 import java.util.Date;
 import java.util.List;
@@ -23,15 +23,18 @@ public class HamburguerActor extends AbstractActor{
 		Food food = product.getFood();
 		switch(food){
 		case HAMBURGUER:
+                case NUGGET:
+                case SODA:
 			log.info("preparing "+food);
 			long starting= new Date().getTime();
 			long current = new Date().getTime();
-			while(-starting+current<1000) {
+			while(-starting+current<15000) {
 				if((-starting+current)%1000==0) {
 					log.info(-starting+current+"...");
 				}
 				current = new Date().getTime();	
 			}
+                        log.info(food +"ready");
 			break;
 			default:
 				log.info(food +"not from this kitchen");

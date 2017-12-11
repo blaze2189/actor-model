@@ -1,4 +1,4 @@
-package com.blaze.propertychange.actor;
+package com.blaze.actor;
 
 import java.util.Date;
 import java.util.List;
@@ -6,16 +6,20 @@ import java.util.List;
 import com.blaze.model.Order;
 import com.blaze.model.Product;
 import com.blaze.util.Food;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class FriesActor extends AbstractActor{
 
 	@Override
 	protected void receiveMessage(Object object) {
-		if(object instanceof Order) {
+            	if(object instanceof Order) {
 			Order  order = (Order)object;
 			List<Product> productList = order.getProductList();
 			productList.forEach(product ->prepareFood(product));
-		}
+		}else{
+                    log.info("message not recognized");
+                }
 		
 	}
 	
@@ -32,6 +36,7 @@ public class FriesActor extends AbstractActor{
 				}
 				current = new Date().getTime();	
 			}
+                        log.info(food + "ready");
 			break;
 			default:
 				log.info(food +"not from this kitchen");

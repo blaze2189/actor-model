@@ -1,89 +1,34 @@
 package com.blaze;
 
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
-
-import org.apache.log4j.Logger;
-
-import com.blaze.actor.ActorContainer;
-import com.blaze.actor.CashierActor;
+import com.blaze.actor.AbstractActor;
 import com.blaze.actor.CustomerActor;
-import com.blaze.model.Order;
-import com.blaze.model.Product;
-import com.blaze.util.Food;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.logging.Level;
 
-/**
- * Hello world!
- *
- */
 public class App {
 
-	private static Logger log = Logger.getLogger(App.class);
-
 	public static void main(String[] args) {
-		// Product product = new Product();
-		ActorContainer actorContainer = ActorContainer.getSystem();
-		ExecutorService executor = Executors.newCachedThreadPool();
-
-		// Runnable task = () -> {
-		// for (;;) {
-		// try {
-		// Thread.sleep(5000);
-		// } catch (InterruptedException e) {
-		// // TODO Auto-generated catch block
-		// e.printStackTrace();
-		// }
-		// Food food = Food.FRIES;
-		// Double orderId = Math.random() * 100000;
-		// String orderIdString = String.valueOf(Math.round(orderId));
-		// List<Product> listProduct = new ArrayList<>();
-		// Long toatalProducts = Math.round(Math.random() * 10);
-		// for (int i = 0; i < toatalProducts; i++) {
-		// Product product = new Product();
-		// Double random = Math.random();
-		// if (random < 0.25) {
-		// food = Food.FRIES;
-		// } else if (random >= 0.25 && random < 0.5) {
-		// food = Food.HAMBURGUER;
-		// } else if (random >= 0.5 && random < 0.75) {
-		// food = Food.NUGGET;
-		// } else if (random >= 0.75 && random < 1.0) {
-		// food = Food.SODA;
-		// }
-		// product.setFood(food);
-		// listProduct.add(product);
-		// }
-		// Order order = new Order();
-		// order.setOrderId(orderIdString);
-		// order.setProductList(listProduct);
-		// order.setTotal(100.00);
-		// log.info("new message " + order.getOrderId());
-		// actorContainer.addToMailBox(CashierActor.class, order);
-		// }
-		// };
-
-		Runnable task = () -> {
-
-			for (int i = 0; i < 3; i++) {
-				actorContainer.addToMailBox(CustomerActor.class, "CREATE");
+		AbstractActor initialActor = new AbstractActor() {
+			
+			@Override
+			protected void receiveMessage(Object object) {
+				// TODO Auto-generated method stub
+				
 			}
-
+			
+			@Override
+			protected void emitMessage(Object object) {
+				// TODO Auto-generated method stub
+				
+			}
 		};
-		try {
-			executor.execute(task);
-		} catch (Exception e) {
-		} finally {
-			try {
-				executor.awaitTermination(2, TimeUnit.SECONDS);
-			} catch (InterruptedException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			}
-		}
-
+		
+		AbstractActor customer = new CustomerActor();
+//		AbstractActor cashier = new CashierActor();
+		
+		initialActor.addActor(customer);
+		initialActor.sendMessage("CREATE");
+//		customer.addActor(cashier);
+//		customer.sendMessage("CREATE");
+		System.out.println("fin");
 	}
+	
 }

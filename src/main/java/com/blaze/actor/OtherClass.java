@@ -1,4 +1,4 @@
-package com.blaze.propertychange.actor;
+package com.blaze.actor;
 
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
