@@ -12,7 +12,7 @@ public class ActorContainer {
 
 	private Logger log = Logger.getLogger(getClass());
 
-	private Map<Class<? extends AbstractActor>, List<ActorRef>> actors = new HashMap<>();
+	private Map<Class<? extends AbstractActor>, ActorRef> actors = new HashMap<>();
 
 	private static ActorContainer actorContainer = new ActorContainer();
 
@@ -28,13 +28,35 @@ public class ActorContainer {
 		return new ActorRef(clazz, poolNumber);
 	}
 
-	public List<ActorRef> retrieveActorRef(Class<? extends AbstractActor> clazz) {
+	public ActorRef retrieveActorRef(Class<? extends AbstractActor> clazz) {
 		return actors.get(clazz);
+	}
+
+	public ActorRef createOrRetrieve(Class<? extends AbstractActor> clazz) {
+		if (actors.get(clazz) == null) {
+			actors.put(clazz, createActorRef(clazz));
+		}
+		return actors.get(clazz);
+	}
+
+	public ActorRef createOrRetrieve(Class<? extends AbstractActor> clazz,Integer poolNumber) {
+		if (actors.get(clazz) == null) {
+			actors.put(clazz, createActorRef(clazz,poolNumber));
+		}
+		return actors.get(clazz);
+	}
+
+	public void addActorRefToMap(Class<? extends AbstractActor> clazz,Integer poolNumber) {
+		if(actors.get(clazz)==null) {
+			actors.put(clazz,createActorRef(clazz, poolNumber));
+		}
+	}
+	
+	public void addActorRefToMap(Class<? extends AbstractActor> clazz) {
+		addActorRefToMap(clazz,1);
 	}
 
 	private ActorContainer() {
 	}
 
-	
-	
 }

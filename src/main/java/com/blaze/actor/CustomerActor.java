@@ -10,7 +10,8 @@ import com.blaze.util.Food;
 public class CustomerActor extends AbstractActor {
 
 	private ActorContainer container = ActorContainer.getSystem();
-	private ActorRef cashierActor = container.createActorRef(CashierActor.class);
+	private ActorRef cashierActor = container.retrieveActorRef(CashierActor.class);
+//	private ActorRef cashierActor = container.createActorRef(CashierActor.class);
 	
     public CustomerActor() {
 //        addActor(new CashierActor());
@@ -60,6 +61,8 @@ public class CustomerActor extends AbstractActor {
 //                    sendMessage(order);
                     cashierActor.ask(order);
                     break;
+                    default:
+                    	log.info(message+" not correct");
             }
         } else {
             super.log.info("Not recognized Message");
