@@ -38,7 +38,7 @@ public abstract class AbstractActor {
 	
 	protected AbstractActor() {
 		mailBox = new ArrayDeque<>();
-		log.info("new instance "+getClass());
+//		log.info("new instance "+getClass());
 	}
 	
 	protected ActorState getActorState() {
@@ -49,7 +49,7 @@ public abstract class AbstractActor {
 	
 	public final void sendMessage(Object object) {
 		log.info("fire message");
-		propertyChangeSupport.firePropertyChange("message", null, object);
+//		propertyChangeSupport.firePropertyChange("message", null, object);
 		log.info("kataplum");
 	}
 	

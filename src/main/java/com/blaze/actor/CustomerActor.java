@@ -6,12 +6,14 @@ import java.util.List;
 import com.blaze.model.Order;
 import com.blaze.model.Product;
 import com.blaze.util.Food;
-import com.sun.javafx.scene.control.skin.VirtualFlow;
 
 public class CustomerActor extends AbstractActor {
 
+	private ActorContainer container = ActorContainer.getSystem();
+	private ActorRef cashierActor = container.createActorRef(CashierActor.class);
+	
     public CustomerActor() {
-        addActor(new CashierActor());
+//        addActor(new CashierActor());
     }
 
     @Override
@@ -42,20 +44,21 @@ public class CustomerActor extends AbstractActor {
                         product.setFood(food);
                         listProduct.add(product);
                     }
-                    listProduct = new ArrayList<>();
-                    Product product = new Product();
-                    product.setFood(Food.HAMBURGUER);
-                    listProduct.add(product);
-                    product = new Product();
-                    product.setFood(Food.FRIES);
-                    listProduct.add(product);
+//                    listProduct = new ArrayList<>();
+//                    Product product = new Product();
+//                    product.setFood(Food.HAMBURGUER);
+//                    listProduct.add(product);
+//                    product = new Product();
+//                    product.setFood(Food.FRIES);
+//                    listProduct.add(product);
                     Order order = new Order();
                     order.setOrderId(orderIdString);
                     order.setProductList(listProduct);
                     order.setTotal(100.00);
                     super.log.info("new message " + order.getOrderId());
 //                super.container.addToMailBox(CashierActor.class, order);
-                    sendMessage(order);
+//                    sendMessage(order);
+                    cashierActor.ask(order);
                     break;
             }
         } else {

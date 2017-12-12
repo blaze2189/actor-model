@@ -5,6 +5,15 @@
  */
 package com.blaze.actor;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import com.blaze.model.DeliverProduct;
+import com.blaze.model.Order;
+import com.blaze.model.Product;
+import com.blaze.model.Shipper;
+import com.blaze.util.Status;
+
 /**
  *
  * @author Jorge
@@ -13,7 +22,28 @@ public class ShipperActor extends AbstractActor {
 
     @Override
     protected void receiveMessage(Object object) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+       if(object instanceof DeliverProduct){
+    	   DeliverProduct deliverProduct = (DeliverProduct)object;
+    	   List<Product> productList = Shipper.mapOrder.get(deliverProduct.getOrderId());
+    	   log.info(deliverProduct.getOrderId()+"\n"+productList);
+    	   
+    	   Boolean delivered=productList.stream().anyMatch(product ->product.getStatus()!=Status.DELIVERED);
+    	   if(delivered) {
+    	   log.info("the "+deliverProduct.getProduct().getFood()+" for the order "+deliverProduct.getOrderId());
+    	   }else {
+    		   log.info("time to deliver order "+deliverProduct.getOrderId()+"\n"+deliverProduct.getProduct());
+    		   Shipper.mapOrder.remove(deliverProduct.getOrderId());
+    	   }
+       }else if(object instanceof Order){
+    	   Order order = (Order)object;
+    	   String orderId = order.getOrderId();
+    	   log.info("added: \n"+orderId+order.getProductList());
+    	   Shipper.mapOrder.put(orderId, order.getProductList());
+    	   Shipper.mapDeliverOrder.put(orderId, new ArrayList<Product>()) ;
+//    	   log.info("Total of orders "+Shipper.mapOrder.size());
+       }else {
+//    	   log.info("not recognized ");
+       }
     }
 
     @Override

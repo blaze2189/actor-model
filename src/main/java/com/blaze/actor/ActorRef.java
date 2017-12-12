@@ -5,14 +5,12 @@
  */
 package com.blaze.actor;
 
-import com.blaze.model.Product;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
+import java.lang.reflect.InvocationTargetException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
+
 import org.apache.log4j.Logger;
 
 
@@ -40,37 +38,28 @@ public class ActorRef {
         return this.abstractActorClass;
     }
 
-    public void execute(Object objectMessage)  {
+    public void ask(Object objectMessage)  {
         try {
             log.info(abstractActorClass.toString());
-            AbstractActor actor = abstractActorClass.newInstance();
+//            AbstractActor actor = abstractActorClass.newInstance();
+            AbstractActor actor = abstractActorClass.getConstructor().newInstance();
 
-            Callable<String> task = () -> {
+            Runnable task = () -> {
                 actor.receiveMessage(objectMessage);
-                return "finish";
             };
-            
             
             ExecutorService executor = Executors.newFixedThreadPool(poolNumber);
             Future<?> future = executor.submit(task);
             
-//            while(!future.isDone()){
-//                System.out.println("not done");
-//                
-//            }
-            Object result = future.get(5,TimeUnit.SECONDS);
-            System.out.println("done: "+result);
+//            Object result = future.get(10,TimeUnit.SECONDS);
+            System.out.println("done: ");
                 executor.shutdown();
                 executor.awaitTermination(5, TimeUnit.SECONDS);
             
-        } catch (TimeoutException|ExecutionException|InterruptedException|InstantiationException | IllegalAccessException ex) {
+//        } catch (InvocationTargetException|NoSuchMethodException|TimeoutException|ExecutionException|InterruptedException|InstantiationException | IllegalAccessException ex) {
+        } catch (InvocationTargetException|NoSuchMethodException|InterruptedException|InstantiationException | IllegalAccessException ex) {
             log.error(ex);
         }
     }
     
-    public static void main(String[] args) {
-        ActorRef actorRef = new ActorRef(FriesActor.class);
-        actorRef.execute(new Product());
-    }
-
 }
