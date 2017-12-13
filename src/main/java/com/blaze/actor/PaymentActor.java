@@ -10,9 +10,9 @@ public class PaymentActor extends AbstractActor {
 	
 	private ActorContainer container = ActorContainer.getSystem();
 	private ActorRef friesActor = container.createActorRef(FriesActor.class);
-	private ActorRef hamburguerActor = container.createActorRef(HamburguerActor.class);
-	private ActorRef inventoryActor = container.createActorRef(InventoryActor.class);
-	private ActorRef shipperActor = container.createActorRef(ShipperActor.class);
+	private ActorRef hamburguerActor = container.createActorRef(HamburguerActor.class,this);
+	private ActorRef inventoryActor = container.createActorRef(InventoryActor.class,this);
+	private ActorRef shipperActor = container.createActorRef(ShipperActor.class,this);
 
 	public PaymentActor() {
 //		FriesActor fries = new FriesActor();

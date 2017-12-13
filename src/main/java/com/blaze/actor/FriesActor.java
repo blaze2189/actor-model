@@ -12,7 +12,8 @@ import com.blaze.util.Status;
 public class FriesActor extends AbstractActor {
 
 	ActorContainer actorContainer = ActorContainer.getSystem();
-	ActorRef shipperActor = actorContainer.createActorRef(ShipperActor.class);
+//	ActorRef shipperActor = actorContainer.createActorRef(ShipperActor.class);
+	ActorRef shipperActor = actorContainer.retrieveActorRef(ShipperActor.class,this);
 	
 	@Override
 	protected void receiveMessage(Object object) {
@@ -37,10 +38,11 @@ public class FriesActor extends AbstractActor {
 		product.setStatus(Status.PREPARATION);
 		switch (food) {
 		case FRIES:
-			log.info("preparing " + food);
+		case SODA:
+			log.info("-------------------------------------preparing " + food);
 			long starting = new Date().getTime();
 			long current = new Date().getTime();
-			while (-starting + current < 10000) {
+			while (-starting + current < 5000) {
 				if ((-starting + current) % 1000 == 0) {
 //					log.info(-starting + current + "...");
 				}

@@ -5,7 +5,6 @@ import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.util.ArrayDeque;
 import java.util.Deque;
-import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -16,9 +15,9 @@ import com.blaze.util.ActorState;
 public abstract class AbstractActor {
 
 	protected Logger log = Logger.getLogger(getClass());
-	
+
 	protected ActorState actorState = ActorState.IDLE;
-        protected AbstractActor dispatcher;
+	protected AbstractActor dispatcher;
 	protected Deque<Object> mailBox;
 	protected PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
 	protected PropertyChangeListener unknownName = new PropertyChangeListener() {
@@ -27,61 +26,65 @@ public abstract class AbstractActor {
 		public void propertyChange(PropertyChangeEvent event) {
 			Object message = event.getNewValue();
 			mailBox.push(message);
-			Runnable r = ()->{
+			Runnable r = () -> {
 				receiveMessage(message);
 			};
 			ExecutorService e = Executors.newFixedThreadPool(1);
 			e.execute(r);
 		}
-		
+
 	};
 	protected AbstractActor senderActor;
-	
+
 	protected AbstractActor() {
 		mailBox = new ArrayDeque<>();
-//		log.info("new instance "+getClass());
+		// log.info("new instance "+getClass());
 	}
-	
+
 	protected ActorState getActorState() {
 		return this.actorState;
 	}
-	
+
 	protected abstract void receiveMessage(Object object);
+
+	protected void setDispatcher(AbstractActor dispatcher) {
+		this.dispatcher = dispatcher;
+	}
+
+	protected AbstractActor getDispatcher() {
+		return this.dispatcher;
+	}
 	
-        protected void setDispatcher(AbstractActor dispatcher){
-            this.dispatcher=dispatcher;
-        }
-        
 	public final void sendMessage(Object object) {
 		log.info("fire message");
-//		propertyChangeSupport.firePropertyChange("message", null, object);
+		// propertyChangeSupport.firePropertyChange("message", null, object);
 		log.info("kataplum");
 	}
-	
-	protected  void emitMessage(Object object){
-            log.info("sending answer");
-            if(dispatcher!=null){
-                dispatcher.receiveMessage(object);
-            }else{
-                log.info("There is no Dispatcher");
-            }
-        }
-	
-	private void addToMailBox(Object message) {
-//		mailBox.add(message);
-//		propertyChangeSupport.firePropertyChange("message", null, message);
+
+	protected void emitMessage(Object object) {
+		log.info("sending answer");
+		if (dispatcher != null) {
+			dispatcher.receiveMessage(object);
+		} else {
+			log.info("There is no Dispatcher");
+		}
 	}
-	
+
+	private void addToMailBox(Object message) {
+		// mailBox.add(message);
+		// propertyChangeSupport.firePropertyChange("message", null, message);
+	}
+
 	private void addListener(PropertyChangeListener listener) {
 		propertyChangeSupport.addPropertyChangeListener(listener);
 	}
-	
+
 	public PropertyChangeListener getUnknownName() {
 		return this.unknownName;
 	}
-	
+
 	public void addActor(AbstractActor actor) {
 		addListener(actor.getUnknownName());
 	}
-	
+
 }

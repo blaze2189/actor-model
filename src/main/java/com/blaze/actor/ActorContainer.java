@@ -64,6 +64,18 @@ public class ActorContainer {
             actors.put(clazz, createActorRef(clazz, poolNumber));
         }
     }
+    
+    public void addActorRefToMap(Class<? extends AbstractActor> clazz, AbstractActor dispatcher,Integer poolNumber) {
+    	if (actors.get(clazz) == null) {
+    		actors.put(clazz, createActorRef(clazz, dispatcher,poolNumber));
+    	}
+    }
+    
+    public void addActorRefToMap(Class<? extends AbstractActor> clazz, AbstractActor dispatcher) {
+    	if (actors.get(clazz) == null) {
+    		actors.put(clazz, createActorRef(clazz, dispatcher,1));
+    	}
+    }
 
     public void addActorRefToMap(Class<? extends AbstractActor> clazz) {
         addActorRefToMap(clazz, 1);

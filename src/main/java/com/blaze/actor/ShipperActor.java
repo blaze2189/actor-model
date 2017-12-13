@@ -12,6 +12,7 @@ import com.blaze.model.DeliverProduct;
 import com.blaze.model.Order;
 import com.blaze.model.Product;
 import com.blaze.model.Shipper;
+import com.blaze.ui.MainWindow;
 import com.blaze.util.Status;
 
 /**
@@ -20,9 +21,12 @@ import com.blaze.util.Status;
  */
 public class ShipperActor extends AbstractActor {
 
+	ActorContainer container = ActorContainer.getSystem();
+	ActorRef mainWindow = container.retrieveActorRef(MainWindow.class);
+	
     @Override
     protected void receiveMessage(Object object) {
-       if(object instanceof DeliverProduct){
+    	if(object instanceof DeliverProduct){
     	   DeliverProduct deliverProduct = (DeliverProduct)object;
     	   List<Product> productList = Shipper.mapOrder.get(deliverProduct.getOrderId());
     	   log.info(deliverProduct.getOrderId()+"\n"+productList);
@@ -31,8 +35,11 @@ public class ShipperActor extends AbstractActor {
     	   if(delivered) {
     	   log.info("the "+deliverProduct.getProduct().getFood()+" for the order "+deliverProduct.getOrderId());
     	   }else {
-    		   log.info("time to deliver order "+deliverProduct.getOrderId()+"\n"+deliverProduct.getProduct());
+    		   log.info("**************************************************time to deliver order "+deliverProduct.getOrderId()+"\n"+deliverProduct.getProduct());
     		   Shipper.mapOrder.remove(deliverProduct.getOrderId());
+//    		   mainWindow.ask(deliverProduct);
+    		  dispatcher.receiveMessage(deliverProduct);
+//    		   emitMessage(deliverProduct);
     	   }
        }else if(object instanceof Order){
     	   Order order = (Order)object;

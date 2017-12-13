@@ -12,7 +12,8 @@ import com.blaze.util.Status;
 public class HamburguerActor extends AbstractActor {
 
 	ActorContainer actorContainer = ActorContainer.getSystem();
-	ActorRef shipperActor = actorContainer.createActorRef(ShipperActor.class);
+//	ActorRef shipperActor = actorContainer.createActorRef(ShipperActor.class,this.getDispatcher().getDispatcher().getDispatcher().getDispatcher());
+	ActorRef shipperActor = actorContainer.retrieveActorRef(ShipperActor.class,this);
 
 	@Override
 	protected void receiveMessage(Object object) {
@@ -25,6 +26,7 @@ public class HamburguerActor extends AbstractActor {
 				deliverProduct.setOrderId(order.getOrderId());
 				deliverProduct.setProduct(product);
 				shipperActor.ask(deliverProduct);
+				emitMessage(deliverProduct);
 			});
 		}
 
@@ -36,8 +38,7 @@ public class HamburguerActor extends AbstractActor {
 		switch (food) {
 		case HAMBURGUER:
 		case NUGGET:
-		case SODA:
-			log.info("preparing " + food);
+			log.info("+++++++++++++++++++++++++++++++++++++++++++++preparing " + food);
 			long starting = new Date().getTime();
 			long current = new Date().getTime();
 			while (-starting + current < 15000) {

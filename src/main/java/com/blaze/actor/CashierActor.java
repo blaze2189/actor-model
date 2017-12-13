@@ -5,7 +5,7 @@ import com.blaze.model.Order;
 public class CashierActor extends AbstractActor{
 
 	private ActorContainer container = ActorContainer.getSystem();
-	private ActorRef paymentActor = container.createActorRef(PaymentActor.class);
+	private ActorRef paymentActor = container.createActorRef(PaymentActor.class,this);
 	
 	public CashierActor() {
 //		addActor(new PaymentActor());
@@ -13,14 +13,12 @@ public class CashierActor extends AbstractActor{
 	
 	@Override
 	protected void receiveMessage(Object object) {
-		System.out.println("received message "+object.getClass());
 		if(object instanceof Order) {
-//			sendMessage(object);
 			paymentActor.ask(object);
+			emitMessage(object);
 		}else {
 			log.info("message not recognized");
-		}
-		
+		}		
 	}
 
 //	@Override
