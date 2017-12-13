@@ -18,6 +18,7 @@ public abstract class AbstractActor {
 	protected Logger log = Logger.getLogger(getClass());
 	
 	protected ActorState actorState = ActorState.IDLE;
+        protected AbstractActor dispatcher;
 	protected Deque<Object> mailBox;
 	protected PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
 	protected PropertyChangeListener unknownName = new PropertyChangeListener() {
@@ -47,13 +48,24 @@ public abstract class AbstractActor {
 	
 	protected abstract void receiveMessage(Object object);
 	
+        protected void setDispatcher(AbstractActor dispatcher){
+            this.dispatcher=dispatcher;
+        }
+        
 	public final void sendMessage(Object object) {
 		log.info("fire message");
 //		propertyChangeSupport.firePropertyChange("message", null, object);
 		log.info("kataplum");
 	}
 	
-	protected abstract void emitMessage(Object object);
+	protected  void emitMessage(Object object){
+            log.info("sending answer");
+            if(dispatcher!=null){
+                dispatcher.receiveMessage(object);
+            }else{
+                log.info("There is no Dispatcher");
+            }
+        }
 	
 	private void addToMailBox(Object message) {
 //		mailBox.add(message);

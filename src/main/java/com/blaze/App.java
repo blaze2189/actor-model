@@ -1,6 +1,7 @@
 package com.blaze;
 
 import com.blaze.actor.ActorContainer;
+import com.blaze.actor.ActorRef;
 import com.blaze.actor.CashierActor;
 import com.blaze.ui.MainWindow;
 
@@ -32,8 +33,10 @@ public class App {
         
 		actorContainer.addActorRefToMap(CashierActor.class, 2);
 //        String message = "";
-        MainWindow.createAndShowGUI();
+//        MainWindow.createAndShowGUI();
         
+        ActorRef mainWindow = actorContainer.createActorRef(MainWindow.class);
+        mainWindow.ask("START");
 //        while(message!=null && !message.toUpperCase().equals("FINISH")) {
 //        	message=javax.swing.JOptionPane.showInputDialog("Message");
 //        	ActorRef customerActor = actorContainer.createActorRef(CustomerActor.class);

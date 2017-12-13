@@ -55,11 +55,11 @@ public class HamburguerActor extends AbstractActor {
 		}
 
 	}
-
-	@Override
-	protected void emitMessage(Object object) {
-		// TODO Auto-generated method stub
-
-	}
+//
+//	@Override
+//	protected void emitMessage(Object object) {
+//		// TODO Auto-generated method stub
+//
+//	}
 
 }

@@ -26,90 +26,97 @@ import lombok.Setter;
  */
 public class ActorRef {
 
-	private Logger log = Logger.getLogger(getClass());
+    private Logger log = Logger.getLogger(getClass());
 
-	private Class<? extends AbstractActor> abstractActorClass;
-	private Integer poolNumber;
-	List<Mailbox> mailBox = new ArrayList<>();
+    private Class<? extends AbstractActor> abstractActorClass;
+    private Integer poolNumber;
+    private AbstractActor dispatcher;
+    List<Mailbox> mailBox = new ArrayList<>();
 
-	protected ActorRef(Class<? extends AbstractActor> abstractActorClass) {
-		this(abstractActorClass, 1);
-	}
+    protected ActorRef(Class<? extends AbstractActor> abstractActorClass) {
+        this(abstractActorClass,null, 1);
+    }
 
-	protected ActorRef(Class<? extends AbstractActor> abstractACtorClass, Integer poolNumber) {
-		this.abstractActorClass = abstractACtorClass;
-		this.poolNumber = poolNumber;
-		for (int i = 0; i < poolNumber; i++) {
-			mailBox.add(new Mailbox());
-		}
-	}
+    protected ActorRef(Class<? extends AbstractActor> abstractActorClass,AbstractActor dispatcher) {
+        this(abstractActorClass, dispatcher,1);
+    }
+    
+    protected ActorRef(Class<? extends AbstractActor> abstractActorClass,Integer poolNumber) {
+        this(abstractActorClass, null,poolNumber);
+    }
 
-	public Class<? extends AbstractActor> getAbstractActorClass() {
-		return this.abstractActorClass;
-	}
+    protected ActorRef(Class<? extends AbstractActor> abstractACtorClass, AbstractActor dispatcher,Integer poolNumber) {
+        this.abstractActorClass = abstractACtorClass;
+        this.dispatcher=dispatcher;
+        this.poolNumber = poolNumber;
+        for (int i = 0; i < poolNumber; i++) {
+            mailBox.add(new Mailbox());
+        }
+    }
 
-	public void ask(Object objectMessage) {
-		try {
+    public Class<? extends AbstractActor> getAbstractActorClass() {
+        return this.abstractActorClass;
+    }
+
+    public void ask(Object objectMessage) {
+        try {
 //			log.mvn info(abstractActorClass.toString());
-			// AbstractActor actor = abstractActorClass.newInstance();
+            // AbstractActor actor = abstractActorClass.newInstance();
 
 			// AbstractActor actor = abstractActorClass.getConstructor().newInstance();
-			//
-			// Runnable task = () -> {
-			// actor.receiveMessage(objectMessage);
-			// };
+            //
+            // Runnable task = () -> {
+            // actor.receiveMessage(objectMessage);
+            // };
+            ExecutorService executor = Executors.newSingleThreadExecutor();
 
-			
-			ExecutorService executor = Executors.newSingleThreadExecutor();
+            mailBox.forEach(m -> log.info("status " + abstractActorClass.getName() + " " + m.getActorState()));
+            Mailbox task = mailBox.stream().filter(m -> m.getActorState() == ActorState.IDLE).findAny().orElse(null);
 
-			
-
-			mailBox.forEach(m->log.info("status "+abstractActorClass.getName()+" "+m.getActorState()));
-			Mailbox task = mailBox.stream().filter(m -> m.getActorState() == ActorState.IDLE).findAny().orElse(null);
-
-			if (task != null) {
-				task.setMessage(objectMessage);
-				Future<?> future = executor.submit(task);
-				executor.shutdown();
-				executor.awaitTermination(5, TimeUnit.SECONDS);
-			}else {
-				log.info("----------THERE IS NO "+abstractActorClass.getName()+" AVAILABLE----------");
-			}
+            if (task != null) {
+                task.setMessage(objectMessage);
+                Future<?> future = executor.submit(task);
+                executor.shutdown();
+                executor.awaitTermination(5, TimeUnit.SECONDS);
+            } else {
+                log.info("----------THERE IS NO " + abstractActorClass.getName() + " AVAILABLE----------");
+            }
 			// Object result = future.get(10,TimeUnit.SECONDS);
-			// } catch
-			// (InvocationTargetException|NoSuchMethodException|TimeoutException|ExecutionException|InterruptedException|InstantiationException
-			// | IllegalAccessException ex) {
+            // } catch
+            // (InvocationTargetException|NoSuchMethodException|TimeoutException|ExecutionException|InterruptedException|InstantiationException
+            // | IllegalAccessException ex) {
 //		} catch (InvocationTargetException | NoSuchMethodException | InterruptedException | InstantiationException
 //				| IllegalAccessException ex) {
 //			log.error(ex);
-		} catch (InterruptedException ex) {
-			log.error(ex);
-		}
-	}
+        } catch (InterruptedException ex) {
+            log.error(ex);
+        }
+    }
 
-	@Setter
-	@Getter
-	private class Mailbox implements Runnable {
+    @Setter
+    @Getter
+    private class Mailbox implements Runnable {
 
-		private Object message;
-		private ActorState actorState = ActorState.IDLE;
+        private Object message;
+        private ActorState actorState = ActorState.IDLE;
 
-		@Override
-		public void run() {
-			AbstractActor actor;
-			try {
-				this.actorState = ActorState.ACTIVE;
-				actor = abstractActorClass.getConstructor().newInstance();
-				actor.receiveMessage(message);
-				if(actor instanceof CashierActor)
-				log.debug("A "+abstractActorClass.getSimpleName()+" HAS been FREEDOM+++++++++++++++++");
-				this.actorState = ActorState.IDLE;
-			} catch (InstantiationException | IllegalAccessException | IllegalArgumentException
-					| InvocationTargetException | NoSuchMethodException | SecurityException e) {
-				// TODO Auto-generated catch block
-				log.info(e);
-			}
-		}
-	}
+        @Override
+        public void run() {
+            AbstractActor actor;
+            try {
+                this.actorState = ActorState.ACTIVE;
+                actor = abstractActorClass.getConstructor().newInstance();
+                actor.setDispatcher(dispatcher);
+                actor.receiveMessage(message);
+                if (actor instanceof CashierActor) {
+                    log.debug("A " + abstractActorClass.getSimpleName() + " HAS been FREEDOM+++++++++++++++++");
+                }
+                this.actorState = ActorState.IDLE;
+            } catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException | SecurityException e) {
+                // TODO Auto-generated catch block
+                log.info(e);
+            }
+        }
+    }
 
 }

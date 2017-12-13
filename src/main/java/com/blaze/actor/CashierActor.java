@@ -23,9 +23,9 @@ public class CashierActor extends AbstractActor{
 		
 	}
 
-	@Override
-	protected void emitMessage(Object object) {
-
-	}
+//	@Override
+//	protected void emitMessage(Object object) {
+//
+//	}
 
 }

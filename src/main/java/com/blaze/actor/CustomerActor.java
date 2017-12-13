@@ -6,11 +6,13 @@ import java.util.List;
 import com.blaze.model.Order;
 import com.blaze.model.Product;
 import com.blaze.util.Food;
+import java.awt.Container;
 
 public class CustomerActor extends AbstractActor {
 
 	private ActorContainer container = ActorContainer.getSystem();
 	private ActorRef cashierActor = container.retrieveActorRef(CashierActor.class);
+        private AbstractActor dispatcher;
 //	private ActorRef cashierActor = container.createActorRef(CashierActor.class);
 	
     public CustomerActor() {
@@ -60,6 +62,7 @@ public class CustomerActor extends AbstractActor {
 //                super.container.addToMailBox(CashierActor.class, order);
 //                    sendMessage(order);
                     cashierActor.ask(order);
+                    emitMessage(order);
                     break;
                     default:
                     	log.info(message+" not correct");
@@ -70,10 +73,9 @@ public class CustomerActor extends AbstractActor {
 
     }
 
-    @Override
-    protected void emitMessage(Object object) {
-        System.out.println("emit response");
-
-    }
+//    @Override
+//    protected void emitMessage(Object object) {
+//     
+//    }
 
 }
