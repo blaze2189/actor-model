@@ -40,7 +40,7 @@ public class CashierUi extends AbstractActor {
 	private JButton sendButton;
 
 	private ActorContainer container = ActorContainer.getSystem();
-	private ActorRef paymentActor = container.createActorRef(PaymentActor.class,2);
+	private ActorRef paymentActor = container.createActorRef(PaymentActor.class, 2);
 	private ActorRef mainWindow = container.retrieveActorRef(MainWindow.class);
 
 	private void createAndShowView() {
@@ -61,7 +61,6 @@ public class CashierUi extends AbstractActor {
 			public void actionPerformed(ActionEvent arg0) {
 				DefaultTableModel model = (DefaultTableModel) orderTable.getModel();
 				Integer totalAmount = Integer.parseInt(amountTextField.getText());
-
 				for (int amount = 0; amount < totalAmount; amount++) {
 					model.addRow(new Object[] { foodCombo.getSelectedItem() });
 				}
@@ -97,15 +96,18 @@ public class CashierUi extends AbstractActor {
 					}
 					listProduct.add(product);
 				}
-				Double orderId = Math.random()*10000;
+				Double orderId = Math.random() * 10000;
 				String orderIdString = String.valueOf(Math.round(orderId));
+				log.info("new order " +orderIdString);
 				order.setOrderId(orderIdString);
 				order.setProductList(listProduct);
 				paymentActor.ask(order);
 				mainWindow.ask(order);
-//				for(int row=0;row<orderTable.getRowCount();row++) {
-//					orderTable.remove(row);
-//				}
+				DefaultTableModel model = (DefaultTableModel) orderTable.getModel();
+				Integer totalRows = model.getRowCount();
+				while (model.getRowCount() > 0) {
+					model.removeRow(model.getRowCount() - 1);
+				}
 			}
 		});
 
@@ -179,7 +181,7 @@ public class CashierUi extends AbstractActor {
 	@Override
 	protected void receiveResponse(Object object) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 }

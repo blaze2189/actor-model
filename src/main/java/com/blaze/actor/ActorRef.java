@@ -75,14 +75,18 @@ public class ActorRef {
 			// actor.receiveMessage(objectMessage);
 			// };
 			ExecutorService executor = Executors.newSingleThreadExecutor();
-
 			mailBox.forEach(m -> log.info("status " + abstractActorClass.getName() + " " + m.getActorState()));
 			Mailbox task = mailBox.stream().filter(m -> m.getActorState() == ActorState.IDLE).findAny().orElse(null);
 
+			Deque<Object> dequeMailBox = task.getMailboxDeque();
+
+			((LinkedBlockingDeque) dequeMailBox).putLast(objectMessage);
+
 			if (task != null) {
-				task.setMessage(objectMessage);
+				// task.setMessage(objectMessage);
+
 				Future<?> future = executor.submit(task);
-//				future.get();
+				// future.get();
 				executor.shutdown();
 				executor.awaitTermination(5, TimeUnit.SECONDS);
 			} else {
@@ -105,22 +109,42 @@ public class ActorRef {
 	@Getter
 	private class Mailbox implements Runnable {
 
-		private Object message;
+		// private Object message;
 		private ActorState actorState = ActorState.IDLE;
-		private Deque<Object> mailboxDeque = new LinkedBlockingDeque()<>();
-//		private AbstractActor actor = abstractActorClass.getConstructor().newInstance();
+		private Deque<Object> mailboxDeque = new LinkedBlockingDeque<>();
+		// private AbstractActor actor =
+		// abstractActorClass.getConstructor().newInstance();
 		private AbstractActor actor;
+
 		@Override
 		public void run() {
-			
+
 			try {
 				this.actorState = ActorState.ACTIVE;
-				actor =actor!=null?actor: abstractActorClass.getConstructor().newInstance();
+				actor = actor != null ? actor : abstractActorClass.getConstructor().newInstance();
 				actor.setDispatcher(dispatcher);
-				actor.receiveMessage(message);
-//				if (actor instanceof MainWindow) {
-//					log.debug("A " + abstractActorClass.getSimpleName() + " HAS been FREEDOM+++++++++++++++++");
-//				}
+				while (mailboxDeque.size() != 0) {
+					log.info("actor instance: " + actor.getClass());
+					if (actor instanceof FriesActor) {
+//						javax.swing.JOptionPane.showConfirmDialog(null, "hoola");
+						log.info("+-+-++-+-+-+-++-+-+-+-++-+-+-+-++-+-+-+-++-+-+-+-++-+-mailbox size "+mailboxDeque.size());
+					}
+					Object message;
+					try {
+						message = ((LinkedBlockingDeque) mailboxDeque).takeFirst();
+						actor.receiveMessage(message);
+						if (actor instanceof FriesActor) {
+							log.info("+-+-++-+-+-+-++-+-+-+-++-+-+-+-++-+-+-+-++-+-+-+-++-+-mailbox size "+mailboxDeque.size());
+						}
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
+				}
+				// actor.receiveMessage(message);
+				// if (actor instanceof MainWindow) {
+				// log.debug("A " + abstractActorClass.getSimpleName() + " HAS been
+				// FREEDOM+++++++++++++++++");
+				// }
 				this.actorState = ActorState.IDLE;
 			} catch (InstantiationException | IllegalAccessException | IllegalArgumentException
 					| InvocationTargetException | NoSuchMethodException | SecurityException e) {

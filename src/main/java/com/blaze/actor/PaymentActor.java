@@ -9,9 +9,9 @@ public class PaymentActor extends AbstractActor {
 	private Logger log = super.log;
 	
 	private ActorContainer container = ActorContainer.getSystem();
-	private ActorRef friesActor = container.createActorRef(FriesActor.class);
-	private ActorRef hamburguerActor = container.createActorRef(HamburguerActor.class,this);
-	private ActorRef inventoryActor = container.createActorRef(InventoryActor.class,this);
+	private ActorRef friesActor = container.createActorRef(FriesActor.class,10);
+	private ActorRef hamburguerActor = container.createActorRef(HamburguerActor.class,this,50);
+	private ActorRef inventoryActor = container.createActorRef(InventoryActor.class,this,3);
 	private ActorRef shipperActor = container.createActorRef(ShipperActor.class,this);
 
 	public PaymentActor() {
@@ -27,10 +27,16 @@ public class PaymentActor extends AbstractActor {
 	protected void receiveMessage(Object object) {
 		log.info(object.getClass());
 		if (object instanceof Order) {
+			Order order = (Order)object;
+			log.info("processing order: "+order.getOrderId());
 			shipperActor.ask(object);
+			log.info(order.getOrderId()+" sent to shipper ");
 			friesActor.ask(object);
+			log.info(order.getOrderId()+" sent to fries");
 			hamburguerActor.ask(object);
+			log.info(order.getOrderId()+" sent to hamburguer");
 			inventoryActor.ask(object);
+			log.info(order.getOrderId()+" sent to inventory");
 		}else {
 			log.info("not recognized");
 		}
