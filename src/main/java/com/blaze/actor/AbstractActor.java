@@ -46,6 +46,8 @@ public abstract class AbstractActor {
 	}
 
 	protected abstract void receiveMessage(Object object);
+	
+	protected abstract void receiveResponse(Object object);
 
 	protected void setDispatcher(AbstractActor dispatcher) {
 		this.dispatcher = dispatcher;
@@ -64,7 +66,7 @@ public abstract class AbstractActor {
 	protected void emitMessage(Object object) {
 		log.info("sending answer");
 		if (dispatcher != null) {
-			dispatcher.receiveMessage(object);
+			dispatcher.receiveResponse(object);
 		} else {
 			log.info("There is no Dispatcher");
 		}

@@ -31,15 +31,15 @@ public class ShipperActor extends AbstractActor {
     	   List<Product> productList = Shipper.mapOrder.get(deliverProduct.getOrderId());
     	   log.info(deliverProduct.getOrderId()+"\n"+productList);
     	   
-    	   Boolean delivered=productList.stream().anyMatch(product ->product.getStatus()!=Status.DELIVERED);
-    	   if(delivered) {
+    	   Boolean notDelivered=productList.stream().anyMatch(product ->product.getStatus()!=Status.DELIVERED);
+    	   if(notDelivered) {
     	   log.info("the "+deliverProduct.getProduct().getFood()+" for the order "+deliverProduct.getOrderId());
     	   }else {
     		   log.info("**************************************************time to deliver order "+deliverProduct.getOrderId()+"\n"+deliverProduct.getProduct());
     		   Shipper.mapOrder.remove(deliverProduct.getOrderId());
 //    		   mainWindow.ask(deliverProduct);
-    		  dispatcher.receiveMessage(deliverProduct);
-//    		   emitMessage(deliverProduct);
+//    		  dispatcher.receiveMessage(deliverProduct);
+    		   emitMessage(deliverProduct);
     	   }
        }else if(object instanceof Order){
     	   Order order = (Order)object;
@@ -52,6 +52,12 @@ public class ShipperActor extends AbstractActor {
 //    	   log.info("not recognized ");
        }
     }
+
+	@Override
+	protected void receiveResponse(Object object) {
+		// TODO Auto-generated method stub
+		
+	}
 
 //    @Override
 //    protected void emitMessage(Object object) {

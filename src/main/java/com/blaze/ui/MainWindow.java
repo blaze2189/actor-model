@@ -61,31 +61,52 @@ public class MainWindow extends AbstractActor {
 			listProduct.forEach(product -> products.append("[").append(product.getFood()).append("]"));
 			String[] data = new String[] { order.getOrderId(), products.toString() };
 			model.addRow(data);
-		} else if (object instanceof DeliverProduct) {
-			DeliverProduct product = (DeliverProduct) object;
-			String orderId = product.getOrderId();
-			try {
-				DefaultTableModel model = (DefaultTableModel) table.getModel();
-				
-				AtomicInteger currentRow = new AtomicInteger(0);
-				String currentOrderId = "";
-//				synchronized (this) {
-					while (currentRow.get() < model.getRowCount() & !orderId.equals(currentOrderId)) {
-						Integer current = currentRow.getAndIncrement();
-						currentOrderId = String.valueOf(model.getValueAt(0, current));
-						if (currentOrderId.equals(orderId)) {
-//							model.removeRow(current);
-							model.setValueAt("delivered", current, 2);
-//							model.fireTableDataChanged();
-						}
-					}
-//				}
-			} catch (Exception e) {
-				log.info("error:" + e+" when trying to proccess "+orderId);
-			}
-		} else {
+		}  else {
 			log.info("other message received");
 		}
+	}
+	
+
+	@Override
+	protected void receiveResponse(Object object) {
+		 if (object instanceof DeliverProduct) {
+			 	log.info("delivered order received");
+				DeliverProduct product = (DeliverProduct) object;
+				log.info("delivered order received +1");
+				String orderId = product.getOrderId();
+				try {
+					DefaultTableModel model = (DefaultTableModel) table.getModel();
+					log.info("delivered order received +2");
+					AtomicInteger currentRow = new AtomicInteger(0);
+					log.info("delivered order received +3");
+					String currentOrderId = "";
+//					synchronized (this) {
+					log.info("previous to while");
+						while (currentRow.get() < model.getRowCount() & !orderId.equals(currentOrderId)) {
+							Integer current = currentRow.getAndIncrement();
+							currentOrderId = String.valueOf(model.getValueAt(current, 0));
+							log.info("{currentRow: "+currentRow+",currentId:"+currentOrderId+"}");
+							if (currentOrderId.equals(orderId)) {
+//								model.removeRow(current);
+								model.setValueAt("delivered", current, 2);
+//								model.fireTableDataChanged();
+							}
+						}
+//					}
+						log.info("after while");
+				} catch (Exception e) {
+					log.info("error:" + e+" when trying to proccess "+orderId);
+				}
+			}else if (object instanceof Order) {
+				DefaultTableModel model = (DefaultTableModel) table.getModel();
+				Order order = (Order) object;
+				List<Product> listProduct = order.getProductList();
+				StringBuffer products = new StringBuffer(25);
+				listProduct.forEach(product -> products.append("[").append(product.getFood()).append("]"));
+				String[] data = new String[] { order.getOrderId(), products.toString() };
+				model.addRow(data);
+			}
+		
 	}
 
 	private void createAndShowGUI() {
@@ -125,7 +146,6 @@ public class MainWindow extends AbstractActor {
 		DefaultTableModel tableModel = new DefaultTableModel(new Object[] { "Column1", "Column2", "Column 3" }, 0);
 
 		table = new JTable(tableModel);
-		table.setPreferredScrollableViewportSize(new Dimension(500, 70));
 		JScrollPane scrollPane = new JScrollPane(table);
 		constraints.gridx = 0;
 		constraints.gridy = 2;
@@ -140,6 +160,5 @@ public class MainWindow extends AbstractActor {
 		frame.pack();
 		frame.setVisible(true);
 	}
-	
 
 }

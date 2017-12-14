@@ -25,7 +25,10 @@ public class FriesActor extends AbstractActor {
 				DeliverProduct deliverProduct = new DeliverProduct();
 				deliverProduct.setOrderId(order.getOrderId());
 				deliverProduct.setProduct(product);
-				shipperActor.ask(deliverProduct);
+				log.info("the status of "+product.getFood()+":"+product.getStatus());
+				if (product.getStatus() == Status.DELIVERED) {
+					shipperActor.ask(deliverProduct);
+				}
 				});
 		} else {
 			log.info("message not recognized");
@@ -35,7 +38,7 @@ public class FriesActor extends AbstractActor {
 
 	private void prepareFood(Product product) {
 		Food food = product.getFood();
-		product.setStatus(Status.PREPARATION);
+//		product.setStatus(Status.PREPARATION);
 		switch (food) {
 		case FRIES:
 		case SODA:
@@ -56,6 +59,12 @@ public class FriesActor extends AbstractActor {
 			log.info(food + " not from this kitchen");
 		}
 
+	}
+
+	@Override
+	protected void receiveResponse(Object object) {
+		// TODO Auto-generated method stub
+		
 	}
 
 //	@Override

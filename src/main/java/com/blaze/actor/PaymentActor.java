@@ -16,10 +16,10 @@ public class PaymentActor extends AbstractActor {
 
 	public PaymentActor() {
 //		FriesActor fries = new FriesActor();
-//		HamburguerActor hamburguer = new HamburguerActor();
+//		HamburguerActor hamburger = new HamburguerActor();
 //		InventoryActor inventory = new InventoryActor();
 //		addActor(fries);
-//		addActor(hamburguer);
+//		addActor(hamburger);
 //		addActor(inventory);
 	}
 
@@ -35,6 +35,12 @@ public class PaymentActor extends AbstractActor {
 			log.info("not recognized");
 		}
 
+	}
+
+	@Override
+	protected void receiveResponse(Object object) {
+		// TODO Auto-generated method stub
+		
 	}
 
 //	@Override

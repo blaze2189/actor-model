@@ -21,6 +21,12 @@ public class CashierActor extends AbstractActor{
 		}		
 	}
 
+	@Override
+	protected void receiveResponse(Object object) {
+		// TODO Auto-generated method stub
+		
+	}
+
 //	@Override
 //	protected void emitMessage(Object object) {
 //

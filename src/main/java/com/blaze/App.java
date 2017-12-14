@@ -2,8 +2,7 @@ package com.blaze;
 
 import com.blaze.actor.ActorContainer;
 import com.blaze.actor.ActorRef;
-import com.blaze.actor.CashierActor;
-import com.blaze.actor.ShipperActor;
+import com.blaze.ui.CashierUi;
 import com.blaze.ui.MainWindow;
 
 public class App {
@@ -38,7 +37,9 @@ public class App {
 		// String message = "";
 		// MainWindow.createAndShowGUI();
 		ActorRef mainWindow = actorContainer.createOrRetrieve(MainWindow.class); // .createActorRef(MainWindow.class);
+		ActorRef cashierView= actorContainer.createOrRetrieve(CashierUi.class); // .createActorRef(MainWindow.class);
 		mainWindow.ask("START");
+		cashierView.ask("START");
 		// while(message!=null && !message.toUpperCase().equals("FINISH")) {
 		// message=javax.swing.JOptionPane.showInputDialog("Message");
 		// ActorRef customerActor = actorContainer.createActorRef(CustomerActor.class);

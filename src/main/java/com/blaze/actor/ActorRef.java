@@ -6,12 +6,15 @@
 package com.blaze.actor;
 
 import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Deque;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.log4j.Logger;
@@ -104,6 +107,7 @@ public class ActorRef {
 
 		private Object message;
 		private ActorState actorState = ActorState.IDLE;
+		private Deque<Object> mailboxDeque = new LinkedBlockingDeque()<>();
 //		private AbstractActor actor = abstractActorClass.getConstructor().newInstance();
 		private AbstractActor actor;
 		@Override
@@ -114,13 +118,12 @@ public class ActorRef {
 				actor =actor!=null?actor: abstractActorClass.getConstructor().newInstance();
 				actor.setDispatcher(dispatcher);
 				actor.receiveMessage(message);
-				if (actor instanceof MainWindow) {
-					log.debug("A " + abstractActorClass.getSimpleName() + " HAS been FREEDOM+++++++++++++++++");
-				}
+//				if (actor instanceof MainWindow) {
+//					log.debug("A " + abstractActorClass.getSimpleName() + " HAS been FREEDOM+++++++++++++++++");
+//				}
 				this.actorState = ActorState.IDLE;
 			} catch (InstantiationException | IllegalAccessException | IllegalArgumentException
 					| InvocationTargetException | NoSuchMethodException | SecurityException e) {
-				// TODO Auto-generated catch block
 				log.info(e);
 			}
 		}
