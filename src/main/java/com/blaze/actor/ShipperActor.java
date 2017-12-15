@@ -23,47 +23,37 @@ public class ShipperActor extends AbstractActor {
 
 	ActorContainer container = ActorContainer.getSystem();
 	ActorRef mainWindow = container.retrieveActorRef(MainWindow.class);
-	
-    @Override
-    protected void receiveMessage(Object object) {
-    	if(object instanceof DeliverProduct){
-    	   DeliverProduct deliverProduct = (DeliverProduct)object;
-    	   List<Product> productList = Shipper.mapOrder.get(deliverProduct.getOrderId());
-    	   log.info(deliverProduct.getOrderId()+"\n"+productList);
-    	   
-    	   Boolean notDelivered=productList.stream().anyMatch(product ->product.getStatus()!=Status.DELIVERED);
-    	   if(notDelivered) {
-    	   log.info("the "+deliverProduct.getProduct().getFood()+" for the order "+deliverProduct.getOrderId());
-    	   }else {
-    		   log.info("**************************************************time to deliver order "+deliverProduct.getOrderId()+"\n"+deliverProduct.getProduct());
-    		   Shipper.mapOrder.remove(deliverProduct.getOrderId());
-//    		   mainWindow.ask(deliverProduct);
-//    		  dispatcher.receiveMessage(deliverProduct);
-    		   emitMessage(deliverProduct);
-    	   }
-       }else if(object instanceof Order){
-    	   Order order = (Order)object;
-    	   String orderId = order.getOrderId();
-    	   log.info("added: \n"+orderId+order.getProductList());
-    	   Shipper.mapOrder.put(orderId, order.getProductList());
-    	   Shipper.mapDeliverOrder.put(orderId, new ArrayList<Product>()) ;
-//    	   log.info("Total of orders "+Shipper.mapOrder.size());
-       }else {
-//    	   log.info("not recognized ");
-       }
-    }
+
+	@Override
+	protected void receiveMessage(Object object) {
+		if (object instanceof DeliverProduct) {
+			DeliverProduct deliverProduct = (DeliverProduct) object;
+			List<Product> productList = Shipper.mapOrder.get(deliverProduct.getOrderId());
+			log.info(deliverProduct.getOrderId() + "\n" + productList);
+
+			Boolean notDelivered = productList.stream().anyMatch(product -> product.getStatus() != Status.DELIVERED);
+			if (notDelivered) {
+				log.info("the " + deliverProduct.getProduct().getFood() + " for the order "
+						+ deliverProduct.getOrderId());
+			} else {
+				log.info("**************************************************time to deliver order "
+						+ deliverProduct.getOrderId() + "\n" + deliverProduct.getProduct());
+				Shipper.mapOrder.remove(deliverProduct.getOrderId());
+				emitMessage(deliverProduct);
+			}
+		} else if (object instanceof Order) {
+			Order order = (Order) object;
+			String orderId = order.getOrderId();
+			log.info("added: \n" + orderId + order.getProductList());
+			Shipper.mapOrder.put(orderId, order.getProductList());
+			Shipper.mapDeliverOrder.put(orderId, new ArrayList<Product>());
+		} else {
+			log.info("Message not recognized " + object.getClass());
+		}
+	}
 
 	@Override
 	protected void receiveResponse(Object object) {
-		// TODO Auto-generated method stub
-		
 	}
 
-//    @Override
-//    protected void emitMessage(Object object) {
-//        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-//    }
-    
-    
-    
 }

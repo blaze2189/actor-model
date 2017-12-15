@@ -1,23 +1,20 @@
 package com.blaze.actor;
 
-public class InventoryActor extends AbstractActor{
+import com.blaze.model.Order;
+
+public class InventoryActor extends AbstractActor {
 
 	@Override
 	protected void receiveMessage(Object object) {
-		super.log.info("reduce inventory");
-		
+		if (object instanceof Order) {
+			log.info("reduce inventory");
+		} else {
+			log.info("Message not recognized " + object.getClass());
+		}
 	}
 
 	@Override
 	protected void receiveResponse(Object object) {
-		// TODO Auto-generated method stub
-		
 	}
-
-//	@Override
-//	protected void emitMessage(Object object) {
-//		// TODO Auto-generated method stub
-//		
-//	}
 
 }

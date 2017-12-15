@@ -6,11 +6,9 @@
 package com.blaze.actor;
 
 import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Deque;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
@@ -19,7 +17,6 @@ import java.util.concurrent.TimeUnit;
 
 import org.apache.log4j.Logger;
 
-import com.blaze.ui.MainWindow;
 import com.blaze.util.ActorState;
 
 import lombok.Getter;
@@ -66,40 +63,18 @@ public class ActorRef {
 
 	public void ask(Object objectMessage) {
 		try {
-			// log.mvn info(abstractActorClass.toString());
-			// AbstractActor actor = abstractActorClass.newInstance();
-
-			// AbstractActor actor = abstractActorClass.getConstructor().newInstance();
-			//
-			// Runnable task = () -> {
-			// actor.receiveMessage(objectMessage);
-			// };
 			ExecutorService executor = Executors.newSingleThreadExecutor();
-			mailBox.forEach(m -> log.info("status " + abstractActorClass.getName() + " " + m.getActorState()));
 			Mailbox task = mailBox.stream().filter(m -> m.getActorState() == ActorState.IDLE).findAny().orElse(null);
-
 			Deque<Object> dequeMailBox = task.getMailboxDeque();
-
 			((LinkedBlockingDeque) dequeMailBox).putLast(objectMessage);
-
 			if (task != null) {
-				// task.setMessage(objectMessage);
-
 				Future<?> future = executor.submit(task);
 				// future.get();
 				executor.shutdown();
-				executor.awaitTermination(5, TimeUnit.SECONDS);
+				executor.awaitTermination(1, TimeUnit.SECONDS);
 			} else {
 				log.info("----------THERE IS NO " + abstractActorClass.getName() + " AVAILABLE----------");
 			}
-			// Object result = future.get(10,TimeUnit.SECONDS);
-			// } catch
-			// (InvocationTargetException|NoSuchMethodException|TimeoutException|ExecutionException|InterruptedException|InstantiationException
-			// | IllegalAccessException ex) {
-			// } catch (InvocationTargetException | NoSuchMethodException |
-			// InterruptedException | InstantiationException
-			// | IllegalAccessException ex) {
-			// log.error(ex);
 		} catch (InterruptedException ex) {
 			log.error(ex);
 		}
@@ -109,11 +84,8 @@ public class ActorRef {
 	@Getter
 	private class Mailbox implements Runnable {
 
-		// private Object message;
 		private ActorState actorState = ActorState.IDLE;
 		private Deque<Object> mailboxDeque = new LinkedBlockingDeque<>();
-		// private AbstractActor actor =
-		// abstractActorClass.getConstructor().newInstance();
 		private AbstractActor actor;
 
 		@Override
@@ -126,29 +98,27 @@ public class ActorRef {
 				while (mailboxDeque.size() != 0) {
 					log.info("actor instance: " + actor.getClass());
 					if (actor instanceof FriesActor) {
-//						javax.swing.JOptionPane.showConfirmDialog(null, "hoola");
-						log.info("+-+-++-+-+-+-++-+-+-+-++-+-+-+-++-+-+-+-++-+-+-+-++-+-mailbox size "+mailboxDeque.size());
+						log.info("+-+-++-+-+-+-++-+-+-+-++-+-+-+-++-+-+-+-++-+-+-+-++-+-mailbox size "
+								+ mailboxDeque.size());
 					}
 					Object message;
 					try {
 						message = ((LinkedBlockingDeque) mailboxDeque).takeFirst();
 						actor.receiveMessage(message);
 						if (actor instanceof FriesActor) {
-							log.info("+-+-++-+-+-+-++-+-+-+-++-+-+-+-++-+-+-+-++-+-+-+-++-+-mailbox size "+mailboxDeque.size());
+							log.info("+-+-++-+-+-+-++-+-+-+-++-+-+-+-++-+-+-+-++-+-+-+-++-+-mailbox size "
+									+ mailboxDeque.size());
 						}
 					} catch (InterruptedException e) {
 						e.printStackTrace();
 					}
 				}
-				// actor.receiveMessage(message);
-				// if (actor instanceof MainWindow) {
-				// log.debug("A " + abstractActorClass.getSimpleName() + " HAS been
-				// FREEDOM+++++++++++++++++");
-				// }
 				this.actorState = ActorState.IDLE;
 			} catch (InstantiationException | IllegalAccessException | IllegalArgumentException
 					| InvocationTargetException | NoSuchMethodException | SecurityException e) {
 				log.info(e);
+			}catch(Exception e) {
+				log.info("general exception e "+e);
 			}
 		}
 	}

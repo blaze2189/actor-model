@@ -19,49 +19,29 @@ public abstract class AbstractActor {
 	protected ActorState actorState = ActorState.IDLE;
 	protected AbstractActor dispatcher;
 	protected Deque<Object> mailBox;
-	protected PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
-	protected PropertyChangeListener unknownName = new PropertyChangeListener() {
 
-		@Override
-		public void propertyChange(PropertyChangeEvent event) {
-			Object message = event.getNewValue();
-			mailBox.push(message);
-			Runnable r = () -> {
-				receiveMessage(message);
-			};
-			ExecutorService e = Executors.newFixedThreadPool(1);
-			e.execute(r);
-		}
-
-	};
 	protected AbstractActor senderActor;
 
 	protected AbstractActor() {
-		mailBox = new ArrayDeque<>();
-		// log.info("new instance "+getClass());
-	}
-
-	protected ActorState getActorState() {
-		return this.actorState;
 	}
 
 	protected abstract void receiveMessage(Object object);
-	
+
 	protected abstract void receiveResponse(Object object);
 
 	protected void setDispatcher(AbstractActor dispatcher) {
 		this.dispatcher = dispatcher;
 	}
 
-	protected AbstractActor getDispatcher() {
-		return this.dispatcher;
-	}
-	
-	public final void sendMessage(Object object) {
-		log.info("fire message");
-		// propertyChangeSupport.firePropertyChange("message", null, object);
-		log.info("kataplum");
-	}
+	// protected AbstractActor getDispatcher() {
+	// return this.dispatcher;
+	// }
+
+	// public final void sendMessage(Object object) {
+	// log.info("fire message");
+	// // propertyChangeSupport.firePropertyChange("message", null, object);
+	// log.info("kataplum");
+	// }
 
 	protected void emitMessage(Object object) {
 		log.info("sending answer");
@@ -72,21 +52,21 @@ public abstract class AbstractActor {
 		}
 	}
 
-	private void addToMailBox(Object message) {
-		// mailBox.add(message);
-		// propertyChangeSupport.firePropertyChange("message", null, message);
-	}
+	// private void addToMailBox(Object message) {
+	// // mailBox.add(message);
+	// // propertyChangeSupport.firePropertyChange("message", null, message);
+	// }
 
-	private void addListener(PropertyChangeListener listener) {
-		propertyChangeSupport.addPropertyChangeListener(listener);
-	}
+	// private void addListener(PropertyChangeListener listener) {
+	// propertyChangeSupport.addPropertyChangeListener(listener);
+	// }
 
-	public PropertyChangeListener getUnknownName() {
-		return this.unknownName;
-	}
+	// public PropertyChangeListener getUnknownName() {
+	// return this.unknownName;
+	// }
 
-	public void addActor(AbstractActor actor) {
-		addListener(actor.getUnknownName());
-	}
+	// public void addActor(AbstractActor actor) {
+	// addListener(actor.getUnknownName());
+	// }
 
 }

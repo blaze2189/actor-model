@@ -10,18 +10,11 @@ public class PaymentActor extends AbstractActor {
 	
 	private ActorContainer container = ActorContainer.getSystem();
 	private ActorRef friesActor = container.createActorRef(FriesActor.class,10);
-	private ActorRef hamburguerActor = container.createActorRef(HamburguerActor.class,this,50);
+	private ActorRef hamburguerActor = container.createActorRef(HamburguerActor.class,this,10);
 	private ActorRef inventoryActor = container.createActorRef(InventoryActor.class,this,3);
 	private ActorRef shipperActor = container.createActorRef(ShipperActor.class,this);
 
-	public PaymentActor() {
-//		FriesActor fries = new FriesActor();
-//		HamburguerActor hamburger = new HamburguerActor();
-//		InventoryActor inventory = new InventoryActor();
-//		addActor(fries);
-//		addActor(hamburger);
-//		addActor(inventory);
-	}
+	public PaymentActor() {}
 
 	@Override
 	protected void receiveMessage(Object object) {
@@ -38,21 +31,14 @@ public class PaymentActor extends AbstractActor {
 			inventoryActor.ask(object);
 			log.info(order.getOrderId()+" sent to inventory");
 		}else {
-			log.info("not recognized");
+			log.info("Message not recognized "+object.getClass());
 		}
 
 	}
 
 	@Override
 	protected void receiveResponse(Object object) {
-		// TODO Auto-generated method stub
-		
 	}
 
-//	@Override
-//	protected void emitMessage(Object object) {
-//		// TODO Auto-generated method stub
-//
-//	}
 
 }

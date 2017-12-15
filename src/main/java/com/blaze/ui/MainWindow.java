@@ -61,96 +61,57 @@ public class MainWindow extends AbstractActor {
 			listProduct.forEach(product -> products.append("[").append(product.getFood()).append("]"));
 			String[] data = new String[] { order.getOrderId(), products.toString() };
 			model.addRow(data);
-		}  else {
+		} else {
 			log.info("other message received");
 		}
 	}
-	
 
 	@Override
 	protected void receiveResponse(Object object) {
-		 if (object instanceof DeliverProduct) {
-			 	log.info("delivered order received");
-				DeliverProduct product = (DeliverProduct) object;
-				log.info("delivered order received +1");
-				String orderId = product.getOrderId();
-				try {
-					DefaultTableModel model = (DefaultTableModel) table.getModel();
-					log.info("delivered order received +2");
-					AtomicInteger currentRow = new AtomicInteger(0);
-					log.info("delivered order received +3");
-					String currentOrderId = "";
-//					synchronized (this) {
-					log.info("previous to while");
-						while (currentRow.get() < model.getRowCount() & !orderId.equals(currentOrderId)) {
-							Integer current = currentRow.getAndIncrement();
-							currentOrderId = String.valueOf(model.getValueAt(current, 0));
-							log.info("{currentRow: "+currentRow+",currentId:"+currentOrderId+"}");
-							if (currentOrderId.equals(orderId)) {
-//								model.removeRow(current);
-								model.setValueAt("delivered", current, 2);
-//								model.fireTableDataChanged();
-							}
-						}
-//					}
-						log.info("after while");
-				} catch (Exception e) {
-					log.info("error:" + e+" when trying to proccess "+orderId);
+		if (object instanceof DeliverProduct) {
+			DeliverProduct product = (DeliverProduct) object;
+			String orderId = product.getOrderId();
+			DefaultTableModel model = (DefaultTableModel) table.getModel();
+			AtomicInteger currentRow = new AtomicInteger(0);
+			String currentOrderId = "";
+			while (currentRow.get() < model.getRowCount() & !orderId.equals(currentOrderId)) {
+				Integer current = currentRow.getAndIncrement();
+				currentOrderId = String.valueOf(model.getValueAt(current, 0));
+				if (currentOrderId.equals(orderId)) {
+					model.setValueAt("delivered", current, 2);
 				}
-			}else if (object instanceof Order) {
-				DefaultTableModel model = (DefaultTableModel) table.getModel();
-				Order order = (Order) object;
-				List<Product> listProduct = order.getProductList();
-				StringBuffer products = new StringBuffer(25);
-				listProduct.forEach(product -> products.append("[").append(product.getFood()).append("]"));
-				String[] data = new String[] { order.getOrderId(), products.toString() };
-				model.addRow(data);
 			}
-		
+		} else if (object instanceof Order) {
+			DefaultTableModel model = (DefaultTableModel) table.getModel();
+			Order order = (Order) object;
+			List<Product> listProduct = order.getProductList();
+			StringBuffer products = new StringBuffer(25);
+			listProduct.forEach(product -> products.append("[").append(product.getFood()).append("]"));
+			String[] data = new String[] { order.getOrderId(), products.toString() };
+			model.addRow(data);
+		}
+
 	}
 
 	private void createAndShowGUI() {
-		// Create and set up the window.
 		JFrame frame = new JFrame("Actor Model");
 		JPanel pane = new JPanel();
 		LayoutManager gridLayout = new GridBagLayout();
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-		JButton buttonCreateOrder = new JButton("Create");
-		buttonCreateOrder.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent arg0) {
-				ActorContainer container = ActorContainer.getSystem();
-				// container.createActorRef(null, dispatcher)
-				customerActor.ask("CREATE");
-			}
-		});
-
 		pane.setLayout(gridLayout);
-		// pane.setComponentOrientation(ComponentOrientation.LEFT_TO_RIGHT);
 		GridBagConstraints constraints = new GridBagConstraints();
 		constraints.fill = GridBagConstraints.HORIZONTAL;
 		constraints.ipadx = 0;
 
-		constraints.ipady = 0;
-		constraints.weighty = 0;
-		constraints.gridwidth = 1;
-		constraints.gridx = 0;
-		constraints.gridy = 0;
-		constraints.anchor = GridBagConstraints.CENTER;
-		constraints.insets = new Insets(5, 2, 10, 15);
-		pane.add(buttonCreateOrder, constraints);
-
-		// PersonalAbstractTableModel tableModel = new PersonalAbstractTableModel();
-		// JTable table = new JTable(tableModel);
 		DefaultTableModel tableModel = new DefaultTableModel(new Object[] { "Column1", "Column2", "Column 3" }, 0);
 
 		table = new JTable(tableModel);
 		JScrollPane scrollPane = new JScrollPane(table);
 		constraints.gridx = 0;
 		constraints.gridy = 2;
-		constraints.gridwidth = 3;
-		constraints.gridheight = 2;
+		constraints.gridwidth = 4;
+		constraints.gridheight = 4;
 		pane.add(scrollPane, constraints);
 
 		frame.setContentPane(pane);

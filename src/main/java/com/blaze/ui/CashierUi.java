@@ -175,13 +175,10 @@ public class CashierUi extends AbstractActor {
 				createAndShowView();
 			}
 		}
-
 	}
 
 	@Override
 	protected void receiveResponse(Object object) {
-		// TODO Auto-generated method stub
-
 	}
 
 }
